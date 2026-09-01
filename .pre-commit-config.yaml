@@ -1,0 +1,38 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ["--maxkb=50000"]  # 50MB を上限にする例
+
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.12.5
+    hooks:
+      # Update the uv lockfile
+      - id: uv-lock
+        
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.16.4
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+      # Run the formatter.
+      - id: ruff-format
+
+  -   repo: local
+      hooks:
+      - id: ty
+        name: ty check
+        entry: uv run ty check
+        language: system
+        types: [python]
+        # Notebooks are checked by `marimo check`, not ty. (ty does not honour
+        # its own `exclude` for explicitly-passed paths, so exclude here.)
+        exclude: ^notebooks/
+      - id: ascii-only-src-tests
+        name: ASCII-only text in src and tests
+        entry: uv run python scripts/check_ascii.py src tests
+        language: system
+        pass_filenames: false

@@ -1,0 +1,115 @@
+name: 調査タスク
+description: 目的・成果・制約・検証方法を明確にして、判断に必要な根拠を得ます
+labels:
+  - research
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このフォームは、Issueとそこから明示的に参照された情報をもとに、担当者が着手し、完了を判断できる状態にするためのものです。作成前に、次を確認してください。
+
+        - 期待する成果が1つに絞られている
+        - 重要な判断と制約が確定している
+        - 検証方法と期待結果が具体的で、第三者が完了を確認できる
+        - 未完了の着手条件がある場合は `ready-for-agent` を付けない
+
+        種類を示すラベルだけを自動付与します。`ready-for-agent` / `ready-for-human` は、作成後に明示的に付与してください。
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 目的
+      description: なぜこの調査が必要なのか、どの問題や判断に役立つのかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-outcome
+    attributes:
+      label: 期待する成果
+      description: 調査活動ではなく、完了時に得られる回答、根拠、表、図、レポートなどを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: research-question
+    attributes:
+      label: 調べる問い
+      description: この調査で明らかにすることを、答えられる問いとして書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 背景・現状
+      description: 現在の観察、既知の根拠、先行する調査、なぜ今この問いを調べるのかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: analysis-impact
+    attributes:
+      label: 解析結果への影響
+      description: 調査が既存の解析値、図、結論、対象データ、下流の判断へ与える可能性を書いてください。影響しない場合も明記してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: resulting-decision
+    attributes:
+      label: 結果を受けて判断すること
+      description: どの結果なら何を採用・変更・中止するのか、この調査の結果を使う判断を書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: decisions
+    attributes:
+      label: 方針・決定事項
+      description: 仮説と予測、または探索的調査として仮説を置かないことを明記し、確定した比較方法や対照があれば書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: 制約
+      description: 対象データ、方法、解釈できる範囲、避ける分析、肯定的・否定的な結果の扱いを書いてください。
+      placeholder: |
+        - 対象範囲:
+        - 対象外:
+        - 使用できるデータ・方法:
+        - 解釈上の制約:
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: 検証方法
+      description: 根拠の再現性、比較、追跡可能性、レポートの記載内容など、調査の完了を証明する基準を書いてください。調査作業の一覧は書きません。
+      placeholder: |
+        - 入力から結果を再現できる
+        - 観測値と比較対象を同じ表から追跡できる
+        - 肯定的・否定的な結果と限界がレポートに記録される
+    validations:
+      required: true
+
+  - type: textarea
+    id: reference-information
+    attributes:
+      label: 参考情報
+      description: 利用可能なデータ、予備的な根拠、関連するファイル・notebook・文献など、実行の手掛かりがあれば書いてください。
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: 着手条件・依存関係
+      description: 着手前に完了している必要がある別Issue、データ、外部作業、利用可能であるべき環境があれば書いてください。
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: 関連するIssue・PR
+      description: 着手を妨げない関連IssueやPRがあれば `#123` の形式で記載してください。

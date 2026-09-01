@@ -1,0 +1,112 @@
+name: バグ修正
+description: 目的・成果・制約・検証方法を明確にして、不具合を修正します
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このフォームは、Issueとそこから明示的に参照された情報をもとに、担当者が着手し、完了を判断できる状態にするためのものです。作成前に、次を確認してください。
+
+        - 期待する成果が1つに絞られている
+        - 重要な判断と制約が確定している
+        - 検証方法と期待結果が具体的で、第三者が完了を確認できる
+        - 未完了の着手条件がある場合は `ready-for-agent` を付けない
+
+        種類を示すラベルだけを自動付与します。`ready-for-agent` / `ready-for-human` は、作成後に明示的に付与してください。
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 目的
+      description: なぜこの不具合を修正するのか、放置すると何が困るのかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-outcome
+    attributes:
+      label: 期待する成果
+      description: 作業内容ではなく、修正後に成立している挙動や状態を書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 背景・現状
+      description: 実際に起きたことと、再現方法または判明している発生条件を書いてください。
+      placeholder: |
+        実際に起きたこと:
+
+        再現方法または発生条件:
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: input
+    id: target-version
+    attributes:
+      label: 対象のバージョンまたはコミット
+      description: リリースバージョン、`uv run myproject --version` の出力、またはコミットSHAを記載してください。
+      placeholder: 例：0.4.0 / main@abcdef1
+    validations:
+      required: true
+
+  - type: textarea
+    id: analysis-impact
+    attributes:
+      label: 解析結果への影響
+      description: 影響する解析値、図、結論、出力、下流stage、再生成が必要な成果物を書いてください。影響しない場合も明記してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: decisions
+    attributes:
+      label: 方針・決定事項
+      description: 成果や制約に影響する重要な方針・決定事項があれば書いてください。通常の実装手順は固定しません。
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: 制約
+      description: 対象範囲、対象外、維持する挙動や互換性、必須または禁止する方法を書いてください。特別な制約がない場合も明記してください。
+      placeholder: |
+        - 対象範囲:
+        - 対象外:
+        - 維持する挙動・互換性:
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: 検証方法
+      description: 修正を証明する観測、テスト、コマンドと期待結果を書いてください。実装作業の一覧は書きません。
+      placeholder: |
+        - 元の再現条件で不具合が発生しない
+        - 回帰テストが修正前に失敗し、修正後に通る
+        - 必要な検査が終了コード0になる
+    validations:
+      required: true
+
+  - type: textarea
+    id: reference-information
+    attributes:
+      label: 参考情報
+      description: コマンド、ログ、traceback、環境、最小入力、関連する実装箇所など、実行の手掛かりがあれば書いてください。
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: 着手条件・依存関係
+      description: 着手前に完了している必要がある別Issue、データ、外部作業、利用可能であるべき環境があれば書いてください。
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: 関連するIssue・PR
+      description: 着手を妨げない関連IssueやPRがあれば `#123` の形式で記載してください。

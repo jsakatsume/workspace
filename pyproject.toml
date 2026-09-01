@@ -1,0 +1,130 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/myproject/_version.py"
+
+[tool.hatch.envs.default.env-vars]
+MYPROJECT_HATCH_VCS_RUNTIME_VERSION = "1"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/myproject"]
+
+[project]
+name = "myproject"
+dynamic = ["version"]
+license = { file = "LICENSE" }
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "numpy>=2,<3",
+    "pandas>=3.0.5,<4",
+    "pandera>=0.32.1,<1",
+    "tomlkit>=0.15.1,<1",
+    "scikit-learn>=1.9,<2",
+    "scipy>=1.18.0,<2",
+    "tqdm>=4.70.0,<5",
+    "typer>=0.27.1,<1",
+    "matplotlib>=3.11.1,<4",
+]
+
+[project.urls]
+
+[project.scripts]
+myproject = "myproject._cli.main:app"
+
+[dependency-groups]
+lint = [
+    "ruff>=0.16.4,<1",
+    "ty>=0.0.73,<1",
+    "mdformat>=1.0,<2",
+    "mdformat-mkdocs>=5.3.0,<6",
+    "pandas-stubs>=3.0.5.260730,<4",
+]
+test = [
+    "pytest>=9.1.1,<10",
+    "pytest-cov",
+    "pytest-xdist",
+]
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.7.7,<10",
+    "mkdocstrings-python>=2.0.7,<3",
+    "mkdocs-gen-files>=0.6,<1",
+    "mkdocs-literate-nav>=0.6,<1",
+    "mkdocs-section-index>=0.3,<1",
+    "zensical>=0.0.56,<2",
+]
+dev = [
+    "marimo>=0.24.0,<1",
+    "playwright>=1.62.0,<2",
+    "jupyterlab>=4.6.3,<5",
+    "poethepoet>=0.48.0,<1",
+    {include-group = "lint"},
+    {include-group = "test"},
+    {include-group = "docs"},
+]
+
+[tool.uv]
+# Restrict the universal lock to the platforms we actually support (mirrors the
+# former pixi `platforms`). Windows and other targets are intentionally excluded.
+environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+    "sys_platform == 'linux' and platform_machine == 'aarch64'",
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+]
+
+[tool.deptry]
+known_first_party = ["myproject"]
+
+[tool.deptry.per_rule_ignores]
+DEP001 = ["hatchling"]
+# The template ships a starting stack for data analysis that the example stage
+# does not import yet. Drop what you do not need from `dependencies`, and take
+# it out of this list at the same time.
+DEP002 = ["numpy", "pandera", "scikit-learn", "scipy", "tomlkit", "tqdm"]
+
+[tool.poe.tasks]
+format = "ruff format src/ tests/ notebooks/ scripts/"
+format-check = "ruff format --check src/ tests/ notebooks/ scripts/"
+lint = "ruff check src/ tests/ scripts/"
+lint-fix = "ruff check --fix src/ tests/ scripts/"
+type-check = "ty check src/ tests/ scripts/"
+nb-check = "marimo check notebooks/"
+nb-fix = "marimo check --fix notebooks/"
+lint-md = "mdformat --check docs"
+docs-serve = "zensical serve"
+docs-build = "zensical build"
+deptry = "uv run --with deptry deptry src"
+
+[tool.poe.tasks.code-check]
+sequence = ["format-check", "lint", "type-check", "nb-check"]
+default_item_type = "ref"
+
+[tool.poe.tasks.code-fix]
+sequence = ["lint-fix", "nb-fix", "format", "type-check"]
+default_item_type = "ref"
+
+[tool.pytest.ini_options]
+# Confine collection to tests/ so a bare `uv run pytest` never walks data/, which
+# can hold huge trees or slow network mounts.
+testpaths = ["tests"]
+# --strict-markers / --strict-config surface marker and config typos instead
+# of silently ignoring them (no custom markers are registered yet).
+addopts = "--strict-markers --strict-config --import-mode=importlib"
+
+[tool.coverage.run]
+source = ["myproject"]
+# _version.py is written by the hatch-vcs build hook, not by hand.
+omit = ["*/_version.py"]
+
+[tool.coverage.report]
+show_missing = true

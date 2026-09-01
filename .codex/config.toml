@@ -1,0 +1,37 @@
+model_reasoning_effort = "xhigh"
+approval_policy.granular.sandbox_approval = true
+approval_policy.granular.rules = true
+approval_policy.granular.mcp_elicitations = false
+approval_policy.granular.request_permissions = false
+approval_policy.granular.skill_approval = false
+approvals_reviewer = "user"
+default_permissions = "workspace-network"
+
+[permissions.workspace-network]
+description = "Workspace access with outbound network enabled."
+extends = ":workspace"
+
+[permissions.workspace-network.network]
+enabled = true
+
+[shell_environment_policy]
+set = { UV_CACHE_DIR = "/tmp/myproject-uv-cache" }
+
+[[hooks.PreToolUse]]
+matcher = "^Bash$"
+
+[[hooks.PreToolUse.hooks]]
+type = "command"
+command = 'bash "$(git rev-parse --show-toplevel)/.codex/hooks/gate-git.sh"'
+timeout = 30
+statusMessage = "Checking git command"
+
+[tui]
+status_line = [
+  "model-with-reasoning",
+  "context-used",
+  "five-hour-limit",
+  "weekly-limit",
+  "current-dir",
+  "git-branch",
+]

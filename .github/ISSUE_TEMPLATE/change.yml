@@ -1,0 +1,96 @@
+name: 変更タスク
+description: 目的・成果・制約・検証方法を明確にして、機能・設計・文書・開発環境を変更します
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        このフォームは、Issueとそこから明示的に参照された情報をもとに、担当者が着手し、完了を判断できる状態にするためのものです。作成前に、次を確認してください。
+
+        - 期待する成果が1つに絞られている
+        - 重要な判断と制約が確定している
+        - 検証方法と期待結果が具体的で、第三者が完了を確認できる
+        - 未完了の着手条件がある場合は `ready-for-agent` を付けない
+
+        種類を示すラベルだけを自動付与します。`ready-for-agent` / `ready-for-human` は、作成後に明示的に付与してください。
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: 目的
+      description: なぜこの変更が必要なのか、どの問題や判断に役立つのかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-outcome
+    attributes:
+      label: 期待する成果
+      description: 作業内容ではなく、変更後に成立している状態や得られる成果を書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 背景・現状
+      description: 現在の問題、既存実装、観測済みの事実、なぜ今変更するのかを書いてください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: analysis-impact
+    attributes:
+      label: 解析結果への影響
+      description: 影響する解析値、図、結論、出力、下流stage、再生成が必要な成果物を書いてください。影響しない場合も明記してください。
+    validations:
+      required: true
+
+  - type: textarea
+    id: decisions
+    attributes:
+      label: 方針・決定事項
+      description: 成果や制約に影響する重要な方針・決定事項があれば書いてください。通常の実装手順は固定しません。
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: 制約
+      description: 対象範囲、対象外、維持する挙動や互換性、必須または禁止する方法を書いてください。特別な制約がない場合も明記してください。
+      placeholder: |
+        - 対象範囲:
+        - 対象外:
+        - 維持する挙動・互換性:
+    validations:
+      required: true
+
+  - type: textarea
+    id: verification
+    attributes:
+      label: 検証方法
+      description: 成果を証明する観測、テスト、コマンドと期待結果を書いてください。実装作業の一覧は書きません。
+      placeholder: |
+        - 期待する挙動を観測できる
+        - 関連テストが通る
+        - 必要な検査が終了コード0になる
+    validations:
+      required: true
+
+  - type: textarea
+    id: reference-information
+    attributes:
+      label: 参考情報
+      description: 関連するファイル、module、既存テスト、予備的な調査結果など、実行の手掛かりがあれば書いてください。
+
+  - type: textarea
+    id: prerequisites
+    attributes:
+      label: 着手条件・依存関係
+      description: 着手前に完了している必要がある別Issue、データ、外部作業、利用可能であるべき環境があれば書いてください。
+
+  - type: input
+    id: related-issues
+    attributes:
+      label: 関連するIssue・PR
+      description: 着手を妨げない関連IssueやPRがあれば `#123` の形式で記載してください。

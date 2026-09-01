@@ -1,0 +1,97 @@
+target-version = "py312"
+src = [".", "src"]
+
+# Applies to `ruff format` as well as `ruff check` (the [lint] exclude below
+# does not). _version.py is written by the hatch-vcs build hook on every
+# `uv sync`, is gitignored, and must not be reformatted or linted.
+exclude = ["src/*/_version.py"]
+
+[lint]
+select = [
+    # pydocstyle
+    "D",
+    # Augment the convention by requiring an imperative mood for all docstrings.
+    "D401",
+    # pycodestyle
+    "E",
+    # Pyflakes
+    "F",
+    # flake8-annotations (Any remains allowed)
+    "ANN",
+    # flake8-builtins
+    "A",
+    # flake8-unused-arguments
+    "ARG",
+    # flake8-blind-except
+    "BLE",
+    # flake8-comprehensions
+    "C4",
+    # mccabe
+    "C90",
+    # flake8-datetimez
+    "DTZ",
+    # eradicate
+    "ERA",
+    # flake8-boolean-trap
+    "FBT",
+    # flake8-logging-format
+    "G",
+    # flake8-logging
+    "LOG",
+    # pep8-naming
+    "N",
+    # pandas-vet
+    "PD",
+    # flake8-pie
+    "PIE",
+    # Pylint errors and warnings
+    "PLE", "PLW",
+    # flake8-use-pathlib
+    "PTH",
+    # flake8-return (inconsistent returns and superfluous branches only)
+    "RET502", "RET503", "RET505", "RET506", "RET507", "RET508",
+    # flake8-raise
+    "RSE",
+    # flake8-self
+    "SLF",
+    # flake8-debugger and flake8-print
+    "T10", "T20",
+    # pyupgrade
+    "UP",
+    # flake8-bugbear
+    "B",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # NumPy-specific (deprecated APIs, legacy random)
+    "NPY",
+    # perflint
+    "PERF",
+    # Ruff-specific
+    "RUF",
+    # flake8-pytest-style (effectively tests-only; no pytest constructs in src)
+    "PT",
+]
+ignore = [
+    "ANN401", "D103", "D105",
+]
+exclude = [
+  # version.py imports the hatchling build backend, which is not on the runtime
+  # path. It is hand-written, so `ruff format` should still format it.
+  "src/myproject/version.py",
+  # Notebooks are linted by `marimo check` (reactive-graph aware), not ruff.
+  # This is lint.exclude, so `ruff format` still formats notebooks.
+  "notebooks/**",
+]
+
+[lint.isort]
+required-imports = ["from __future__ import annotations"]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.per-file-ignores]
+"__init__.py" = ["D", "I002"]
+"scripts/**.py" = ["B018", "D", "E501", "F821", "I002", "T20"]
+"tests/**.py" = ["ANN", "ARG", "D", "E501", "I002", "SLF"]

@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-toolsai.datawrangler",
+    "ms-toolsai.jupyter",
+    "ms-toolsai.jupyter-keymap",
+    "charliermarsh.ruff",
+    "astral-sh.ty",
+    "GitHub.copilot-chat",
+    "github.vscode-github-actions",
+    "anthropic.claude-code",
+    "openai.chatgpt",
+    "marimo-team.vscode-marimo",
+    "mechatroner.rainbow-csv",
+    "redhat.vscode-yaml",
+    "njpwerner.autodocstring",
+    "tekumara.typos-vscode",
+    "ms-vscode.live-server"
+  ]
+}

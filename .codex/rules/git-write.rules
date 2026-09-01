@@ -1,0 +1,176 @@
+# Read-only Git commands stay in the sandbox. Declare only exceptions.
+
+prefix_rule(
+    pattern = ["git", "add"],
+    decision = "allow",
+    justification = "Staging changes is reversible and allowed without approval.",
+    match = ["git add README.md"],
+    not_match = ["git status"],
+)
+
+prefix_rule(
+    pattern = ["git", "restore", "--staged"],
+    decision = "allow",
+    justification = "Unstaging changes is reversible and allowed without approval.",
+    match = ["git restore --staged README.md"],
+    not_match = ["git restore README.md"],
+)
+
+prefix_rule(
+    pattern = [
+        "git",
+        [
+            "checkout",
+            "cherry-pick",
+            "commit",
+            "fetch",
+            "gc",
+            "merge",
+            "pull",
+            "push",
+            "rebase",
+            "reset",
+            "revert",
+            "switch",
+        ],
+    ],
+    decision = "prompt",
+    justification = "Require user approval before changing Git history, refs, worktrees, or remotes.",
+    match = ["git commit -m test", "git fetch origin", "git push origin HEAD"],
+    not_match = ["git status", "git branch", "git tag"],
+)
+
+prefix_rule(
+    pattern = [
+        "git",
+        "stash",
+        ["apply", "branch", "clear", "create", "drop", "pop", "push", "store"],
+    ],
+    decision = "prompt",
+    justification = "Require user approval before changing or applying the stash.",
+    match = ["git stash push", "git stash pop"],
+    not_match = ["git stash list"],
+)
+
+prefix_rule(
+    pattern = [
+        "git",
+        "worktree",
+        ["add", "lock", "move", "prune", "remove", "repair", "unlock"],
+    ],
+    decision = "prompt",
+    justification = "Require user approval before changing Git worktrees.",
+    match = ["git worktree add ../feature feature"],
+    not_match = ["git worktree list"],
+)
+
+# The hook catches these destructive options in non-prefix argument positions.
+
+prefix_rule(
+    pattern = [
+        "git",
+        "push",
+        ["--force", "--force-with-lease", "--mirror", "--prune", "-f"],
+    ],
+    decision = "forbidden",
+    justification = "Do not rewrite or broadly delete remote refs.",
+    match = ["git push --force origin main"],
+    not_match = ["git push origin main"],
+)
+
+prefix_rule(
+    pattern = ["git", "reset", "--hard"],
+    decision = "forbidden",
+    justification = "Hard reset discards local work; revert reviewed paths instead.",
+    match = ["git reset --hard HEAD"],
+    not_match = ["git reset --soft HEAD"],
+)
+
+prefix_rule(
+    pattern = [
+        "git",
+        "clean",
+        [
+            "--force",
+            "-df",
+            "-dfx",
+            "-dxf",
+            "-f",
+            "-fd",
+            "-fdx",
+            "-fx",
+            "-fxd",
+            "-xf",
+            "-xdf",
+            "-xfd",
+        ],
+    ],
+    decision = "forbidden",
+    justification = "Forced clean deletes untracked files; remove reviewed paths explicitly.",
+    match = ["git clean -fdx"],
+    not_match = ["git clean -n"],
+)
+
+prefix_rule(
+    pattern = ["git", "branch", ["--force", "-D", "-f"]],
+    decision = "forbidden",
+    justification = "Do not force-move or force-delete branches.",
+    match = ["git branch -D old-branch"],
+    not_match = ["git branch -d old-branch"],
+)
+
+prefix_rule(
+    pattern = ["git", "stash", ["clear", "drop"]],
+    decision = "forbidden",
+    justification = "Do not delete stash recovery data.",
+    match = ["git stash clear"],
+    not_match = ["git stash list"],
+)
+
+prefix_rule(
+    pattern = ["git", "reflog", ["delete", "expire"]],
+    decision = "forbidden",
+    justification = "Do not delete reflog recovery data.",
+    match = ["git reflog expire --expire=now --all"],
+    not_match = ["git reflog show"],
+)
+
+prefix_rule(
+    pattern = ["git", "worktree", "remove", ["--force", "-f"]],
+    decision = "forbidden",
+    justification = "Do not force-remove worktrees.",
+    match = ["git worktree remove --force ../feature"],
+    not_match = ["git worktree remove ../feature"],
+)
+
+prefix_rule(
+    pattern = ["git", "gc", "--prune=now"],
+    decision = "forbidden",
+    justification = "Do not immediately prune objects that may be needed for recovery.",
+    match = ["git gc --prune=now"],
+    not_match = ["git gc --auto"],
+)
+
+prefix_rule(
+    pattern = ["git", "filter-branch"],
+    decision = "forbidden",
+    justification = "Do not rewrite repository history with filter-branch.",
+    match = ["git filter-branch -- --all"],
+    not_match = ["git log --all"],
+)
+
+prefix_rule(
+    pattern = ["git", ["checkout", "restore"], "."],
+    decision = "forbidden",
+    justification = "Do not discard changes across the whole worktree.",
+    match = ["git checkout .", "git restore ."],
+    not_match = ["git restore README.md"],
+)
+
+prefix_rule(
+    pattern = ["git", ["checkout", "restore"], "--", "."],
+    decision = "forbidden",
+    justification = "Do not discard changes across the whole worktree.",
+    match = ["git checkout -- .", "git restore -- ."],
+    not_match = ["git restore -- README.md"],
+)

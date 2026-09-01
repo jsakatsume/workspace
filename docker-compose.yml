@@ -1,0 +1,78 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+    # Tag comes from IMAGE_TAG (= the current git release tag), written into .env
+    # by docker/sync-env.sh. make runs that script first; a raw
+    # `docker compose` that skips it fails fast (the :? below) instead of building
+    # a mistagged image. See docs/dev/container.md.
+    image: "myproject-dev:${IMAGE_TAG:?run make up or docker/sync-env.sh first}"
+    init: true
+    # Codex's Linux sandbox uses bubblewrap, which needs user/mount namespace
+    # syscalls that Docker's default seccomp/AppArmor profiles block.
+    security_opt:
+      - seccomp=unconfined
+      - apparmor=unconfined
+    working_dir: /workspaces/myproject
+    # The entrypoint runs the idempotent setup (uv sync, hooks, agent config) on
+    # every start, then execs this command — so both VS Code Dev Containers and a
+    # plain `docker compose up` reach an identical, ready-to-use container.
+    entrypoint: ["/workspaces/myproject/docker/entrypoint.sh"]
+    command: ["sleep", "infinity"]
+    # Setup writes this marker last; `docker compose up --wait` blocks on it so a
+    # follow-up `make shell` never races an unfinished `.venv`.
+    healthcheck:
+      test: ["CMD", "test", "-f", "/tmp/.devcontainer-ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 2s
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # cache (volume) and .venv (bind mount) live on different filesystems, so
+      # uv's default hardlinking fails — copy instead to avoid warnings.
+      - UV_LINK_MODE=copy
+      - HERDR_CONFIG_PATH=/home/ubuntu/.config/myproject-herdr/config.toml
+    volumes:
+      - .:/workspaces/myproject
+      # Persist the uv download cache and uv-managed Python across rebuilds; the
+      # project .venv lives on the bind mount and is recreated by `uv sync`.
+      - uv-cache:/home/ubuntu/.cache/uv
+      - uv-python:/home/ubuntu/.local/share/uv
+      - claude-config:/home/ubuntu/.claude
+      # Keep Herdr layouts/session references, Codex conversations, and linked
+      # worktree checkouts across container recreation. Mount the tracked config
+      # directory separately so Herdr cannot write shared settings.
+      - herdr-state:/home/ubuntu/.config/herdr
+      - ./docker/herdr:/home/ubuntu/.config/myproject-herdr:ro
+      - herdr-worktrees:/home/ubuntu/.herdr/worktrees
+      # Like claude-config, this volume shadows later image additions; setup
+      # must recreate image-managed files that need to stay current.
+      - codex-config:/home/ubuntu/.codex
+      # Persist the gh OAuth token so git-over-HTTPS auth survives rebuilds; the
+      # repo's remote is SSH but the container has no key, so setup.sh routes git
+      # through gh's HTTPS token instead. See docs/dev/container.md.
+      - gh-config:/home/ubuntu/.config/gh
+      # Docker-out-of-Docker: share the host daemon's socket so `docker` inside
+      # the container talks to the host. setup.sh aligns the ubuntu user's group
+      # with the socket's GID for non-sudo access. See docs/dev/container.md.
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Host-specific data mounts are configured in ./.env (see .env.example).
+      - ${WORK_MOUNT_SOURCE:-/work}:/work:${MOUNT_ACCESS_MODE:-rw}
+      - ${WORK2_MOUNT_SOURCE:-/work2}:/work2:${MOUNT_ACCESS_MODE:-rw}
+      - ${WORK3_MOUNT_SOURCE:-/work3}:/work3:${MOUNT_ACCESS_MODE:-rw}
+
+volumes:
+  uv-cache:
+  uv-python:
+  claude-config:
+  herdr-state:
+  herdr-worktrees:
+  codex-config:
+  gh-config:

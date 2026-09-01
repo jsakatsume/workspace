@@ -1,0 +1,10 @@
+[environment]
+python-version = "3.12"
+
+[src]
+# version.py imports the hatchling build backend, which is not on the runtime path.
+# Notebooks are checked by `marimo check`, not ty.
+exclude = ["src/myproject/version.py", "notebooks/**"]
+
+[rules]
+unresolved-import = "error"

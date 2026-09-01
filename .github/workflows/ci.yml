@@ -1,0 +1,64 @@
+name: CI
+
+# Run the test suite on every pull request and on pushes to main (not on
+# pushes to other branches — those are covered by their PR).
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          prune-cache: true
+
+      - name: Install the project
+        run: uv sync --locked --all-groups
+
+      - name: Run code checks
+        run: uv run poe code-check
+
+      - name: Check dependency declarations
+        run: uv run poe deptry
+
+  test:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.12.5"
+          enable-cache: true
+          prune-cache: true
+
+      - name: Install the project
+        run: uv sync --locked --all-groups
+
+      # Coverage is measured and reported only (baseline ~82%); no
+      # --cov-fail-under gate yet (added in a follow-up once the baseline lands).
+      - name: Run tests with coverage
+        run: uv run pytest -n auto --cov --cov-report=term-missing
