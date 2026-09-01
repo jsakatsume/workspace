@@ -65,9 +65,10 @@ RUN mkdir -p /home/ubuntu/.cache/uv /home/ubuntu/.local/bin /home/ubuntu/.local/
 # put mise-managed tool shims on PATH for every (incl. non-interactive) context
 ENV PATH="/home/ubuntu/.local/share/mise/shims:${PATH}"
 
-# install the tool environment at build time, pinned by mise.lock
-COPY --chown=ubuntu:ubuntu docker/mise/config.toml docker/mise/mise.lock /home/ubuntu/.config/mise/
-RUN mise install --locked
+# install the tool environment at build time. No lockfile: each build resolves
+# the latest version of every tool, so `make rebuild` is what refreshes them.
+COPY --chown=ubuntu:ubuntu docker/mise/config.toml /home/ubuntu/.config/mise/
+RUN mise install
 
 # add agent skills (uses node provided by mise)
 RUN mkdir -p /home/ubuntu/.claude /home/ubuntu/.codex

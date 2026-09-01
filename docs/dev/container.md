@@ -20,8 +20,7 @@ make up       # image を build（必要なら）してコンテナを起動し�
 make shell    # 動いているコンテナで bash を開く
 make setup    # コンテナの中で setup をやり直す（何度実行してもよい）
 make build    # image を build する
-make lock     # mise の lock（docker/mise/mise.lock）を更新する
-make rebuild  # cache を使わず image を build し直す
+make rebuild  # cache を使わず image を build し直す（mise のツールも最新に上がる）
 make logs     # ログを追う
 make down     # コンテナを止めて消す（named volume は残る）
 ```

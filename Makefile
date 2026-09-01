@@ -12,7 +12,7 @@ COMPOSE := COMPOSE_PROJECT_NAME=myproject-$(or $(USER),$(shell id -un)) docker c
 SERVICE := dev
 
 .DEFAULT_GOAL := help
-.PHONY: help up shell setup build lock rebuild logs down sync-env
+.PHONY: help up shell setup build rebuild logs down sync-env
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -30,10 +30,7 @@ setup: ## Re-run the idempotent setup inside the running container
 build: sync-env ## Build the image
 	$(COMPOSE) build
 
-lock: ## Update the mise lock
-	@docker/lock-tools.sh
-
-rebuild: sync-env ## Rebuild the image from scratch using the tracked lock
+rebuild: sync-env ## Rebuild the image from scratch, picking up the latest tools
 	$(COMPOSE) build --no-cache
 
 logs: ## Follow container logs

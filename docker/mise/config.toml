@@ -1,6 +1,3 @@
-[settings]
-lockfile = true
-
 [tools]
 node = "24"
 fzf = "latest"
@@ -15,5 +12,5 @@ herdr = "latest"
 usage = "latest"
 # npm packages whose postinstall fetches a native binary; mise skips scripts by
 # default (--ignore-scripts), so opt back in or `claude` ships no usable binary.
-"npm:@anthropic-ai/claude-code" = { version = "latest", npm_args = "--ignore-scripts=false" }
+"npm:@anthropic-ai/claude-code" = { version = "latest", npm_args = "--ignore-scripts=false", allow_builds = true }
 "npm:@openai/codex" = { version = "latest", npm_args = "--ignore-scripts=false" }
