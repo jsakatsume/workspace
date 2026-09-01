@@ -19,8 +19,9 @@ services:
       - apparmor=unconfined
     working_dir: /workspaces/myproject
     # The entrypoint runs the idempotent setup (uv sync, hooks, agent config) on
-    # every start, then execs this command — so both VS Code Dev Containers and a
-    # plain `docker compose up` reach an identical, ready-to-use container.
+    # every start, then execs this command — so the container is ready to use
+    # however you reach it: `make shell`, `docker compose exec`, or VS Code
+    # attached to the running container.
     entrypoint: ["/workspaces/myproject/docker/entrypoint.sh"]
     command: ["sleep", "infinity"]
     # Setup writes this marker last; `docker compose up --wait` blocks on it so a

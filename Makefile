@@ -1,13 +1,13 @@
-# Terminal entry point for the dev container. Wraps `docker compose` so working
-# directly from a shell mirrors the VS Code Dev Containers workflow. The compose
-# file and .env live at the repo root, so no extra flags are needed.
+# Entry point for the dev container. Wraps `docker compose` so the whole flow
+# runs from a shell. The compose file and .env live at the repo root, so no
+# extra flags are needed. There is no devcontainer.json: VS Code attaches to the
+# container these targets start (see docs/dev/container.md).
 #
 # Typical flow:  make up  &&  make shell
 
 # Per-user project name so container/volume names don't collide on a shared
-# server (the CLI path otherwise defaults to the bare checkout directory name;
-# VS Code already isolates per workspace path). Falls back to `id -un` if USER
-# is unset.
+# server (compose otherwise defaults to the bare checkout directory name).
+# Falls back to `id -un` if USER is unset.
 COMPOSE := COMPOSE_PROJECT_NAME=myproject-$(or $(USER),$(shell id -un)) docker compose
 SERVICE := dev
 

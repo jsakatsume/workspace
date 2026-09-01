@@ -1,8 +1,8 @@
 # 開発コンテナ
 
-`docker compose` で Ubuntu のコンテナを立て、その中で開発する。VS Code Dev Containers から開いても、ターミナルから `make` を叩いても、同じコンテナに入る。
+`docker compose` で Ubuntu のコンテナを立て、その中で開発する。ターミナルから `make up && make shell` で入る。VS Code で書くなら、立てておいたコンテナに Attach する（後述）。
 
-コンテナを使わず、ホストに `uv` を入れて直接開発してもよい。その場合この文書は読まなくてよい。
+コンテナを使わず、ホストで直接開発してもよい。ホストに `uv` を入れて `uv sync --all-groups` すれば動く。その場合、この文書の残りは読まなくてよい。
 
 ## 使う前に
 
@@ -29,6 +29,14 @@ make down     # コンテナを止めて消す（named volume は残る）
 `make up` は先に `docker/sync-env.sh` を走らせ、`.env` に `IMAGE_TAG`・`HOST_UID`・`HOST_GID` を書く。`docker compose` を直接叩くとこれが走らないので、`IMAGE_TAG` 未設定で失敗する。
 
 コンテナ名と volume 名には `COMPOSE_PROJECT_NAME=myproject-$USER` が付く（`Makefile`）。共有サーバで複数人が同じ repo を使っても衝突しない。
+
+## VS Code から入る
+
+`.devcontainer/devcontainer.json` は置いていない。だから「Reopen in Container」は使えない。代わりに、動いているコンテナに Attach する。
+
+1. ターミナルで `make up`。`.env` を書き、image を build し、setup 完了まで待つ。
+1. Dev Containers 拡張を入れ、コマンドパレットで **Dev Containers: Attach to Running Container** を選ぶ。
+1. `myproject-<ユーザー名>-dev-1` を選び、開いたウィンドウで `/workspaces/myproject` を開く。
 
 ## 中で何が起きるか
 

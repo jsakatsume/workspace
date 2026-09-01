@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # Idempotent container setup. Run by docker/entrypoint.sh on every start and
-# re-runnable by hand via `make setup`. Works regardless of the entry path
-# (VS Code Dev Containers or a plain `docker compose up`).
+# re-runnable by hand via `make setup`. The workspace path is fixed by
+# docker-compose.yml (bind mount + working_dir); containerWorkspaceFolder is set
+# only by a Dev Containers config, and this repo ships none.
 workspace="${containerWorkspaceFolder:-/workspaces/myproject}"
 cd "${workspace}"
 
