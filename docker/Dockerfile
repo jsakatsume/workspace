@@ -1,8 +1,8 @@
 # Pin tool images as named stages so Dependabot tracks them (its docker updater
 # only reads `FROM`, not `COPY --from=<image>`). The copies below reference these.
-FROM ghcr.io/astral-sh/uv:0.12.5 AS uv
-FROM ghcr.io/j178/prek:0.4.14 AS prek
-FROM ghcr.io/jdx/mise:2026.8.10 AS mise
+FROM ghcr.io/astral-sh/uv:0.12.8 AS uv
+FROM ghcr.io/j178/prek:0.5.1 AS prek
+FROM ghcr.io/jdx/mise:2026.8.16 AS mise
 FROM docker:29.7.2-cli AS docker-cli
 
 FROM ubuntu:24.04
