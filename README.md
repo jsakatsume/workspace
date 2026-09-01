@@ -15,16 +15,22 @@ Docker が動いていること（Docker Desktop か Docker Engine）が前提�
 ホストで実行する。
 
 ```bash
-scripts/rename_project.sh my_analysis    # 1. 名前を変える
+git clone git@github.com:jsakatsume/workspace.git my_analysis
+cd my_analysis
+rm -rf .git                              # 1. テンプレの履歴を捨てる
+scripts/rename_project.sh my_analysis    # 2. 名前を変える
 git init && git add -A && git commit -m "chore: start from the template"
-git tag v0.1.0                           # 2. tag が無いと 4 が失敗する
-cp .env.example .env                     # 3. ホストの mount を合わせる
-make up                                  # 4. build して起動（初回は数分）
-make shell                               # 5. コンテナに入る
+git tag v0.1.0                           # 3. tag が無いと 5 が失敗する
+cp .env.example .env                     # 4. ホストの mount を合わせる
+make up                                  # 5. build して起動（初回は数分）
+make shell                               # 6. コンテナに入る
 ```
+
+push 先は自分で用意する。GitHub で空の repo を作り、`git remote add origin <自分の repo>`。
 
 この順番になる理由：
 
+1. **履歴を捨てる。** clone したままだと、テンプレートの履歴と origin を引き継ぐ。自分のプロジェクトの履歴が始まらないし、誤ってテンプレート側に push しかねない。
 1. **名前が先。** compose の `working_dir`・image 名・entrypoint の path に `myproject` が入っている。`make up` の後で変えると、古い名前のコンテナと volume が取り残される。
 1. **tag が無いと止まる。** `docker/sync-env.sh` が image のタグを `git describe --tags --abbrev=0` から取る。tag が無いと `make up` はここで失敗する。
 1. **`.env` はホストごとの設定。** `docker-compose.yml` はホストの `/work`・`/work2`・`/work3` を mount する。手元に無いなら、`.env` で実在する path に向け直すか、`docker-compose.yml` からその3行を消す（→ 後の「使う前に決めること」）。`.env` は git に入らない。
